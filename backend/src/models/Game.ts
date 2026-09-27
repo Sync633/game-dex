@@ -1,7 +1,19 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from '../config/database';
 
-export class Game extends Model {
+export interface GameAttributes {
+  id: number;
+  titulo: string;
+  desenvolvedora: string;
+  plataforma: string;
+  genero: string;
+  anoLancamento: number;
+  zerado: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export class Game extends Model implements GameAttributes {
   declare id: number;
   declare titulo: string;
   declare desenvolvedora: string;
