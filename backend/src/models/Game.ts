@@ -2,13 +2,15 @@ import { DataTypes, Model } from "sequelize";
 import { sequelize } from '../config/database';
 
 export class Game extends Model {
-    declare id: number;
-    declare nome: string;
-    declare titulo: string;
-    declare plataforma: string;
-    declare genero: string;
-    declare anoLancamento: number;
-    declare zerado: boolean;
+  declare id: number;
+  declare titulo: string;
+  declare desenvolvedora: string;
+  declare plataforma: string;
+  declare genero: string;
+  declare anoLancamento: number;
+  declare zerado: boolean;
+  declare readonly createdAt: Date;
+  declare readonly updatedAt: Date;
 }
 
 Game.init(
