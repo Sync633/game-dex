@@ -1,4 +1,5 @@
 import { DataTypes, Model } from "sequelize";
+import { sequelize } from '../config/database';
 
 export class Game extends Model {
     declare id: number;
@@ -9,3 +10,43 @@ export class Game extends Model {
     declare anoLancamento: number;
     declare zerado: boolean;
 }
+
+Game.init(
+    {
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+        },
+        titulo: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true
+        },
+        desenvolvedora: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        plataforma: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        genero: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        anoLancamento: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        zerado: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false
+        }
+    },
+    {
+        sequelize,
+        tableName: 'games',
+        timestamps: true
+    }
+)
