@@ -1,0 +1,99 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "GameDex API",
+    "version": "1.0.0",
+    "description": "API RESTful para gerenciamento de catálogo de jogos da AT1."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor Local"
+    }
+  ],
+  "paths": {
+    "/games": {
+      "get": {
+        "summary": "Lista todos os jogos",
+        "tags": ["Games"],
+        "responses": {
+          "200": { "description": "Sucesso" }
+        }
+      },
+      "post": {
+        "summary": "Cria um novo jogo",
+        "tags": ["Games"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "titulo": { "type": "string", "example": "God of War" },
+                  "desenvolvedora": { "type": "string", "example": "Santa Monica Studio" },
+                  "plataforma": { "type": "string", "example": "PC" },
+                  "genero": { "type": "string", "example": "Ação e Aventura" },
+                  "anoLancamento": { "type": "integer", "example": 2018 },
+                  "zerado": { "type": "boolean", "example": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Criado com sucesso" },
+          "400": { "description": "Campos obrigatórios faltando" }
+        }
+      }
+    },
+    "/games/{id}": {
+      "get": {
+        "summary": "Busca um jogo por ID",
+        "tags": ["Games"],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Sucesso" },
+          "404": { "description": "Não encontrado" }
+        }
+      },
+      "put": {
+        "summary": "Atualiza um jogo",
+        "tags": ["Games"],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "zerado": { "type": "boolean", "example": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Atualizado com sucesso" },
+          "404": { "description": "Não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Deleta um jogo",
+        "tags": ["Games"],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Deletado com sucesso" },
+          "404": { "description": "Não encontrado" }
+        }
+      }
+    }
+  }
+}

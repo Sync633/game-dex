@@ -1,30 +1,22 @@
-import express, { Request, Response } from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
+import app from './app';
 import { sequelize } from './config/database';
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 3000;
-
-app.use(cors());
-app.use(express.json());
-
-app.get('/api/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'OK', mensagem: 'Servidor operacional.' });
-});
 
 async function main() {
   try {
     await sequelize.authenticate();
-    console.log('Conexao com o banco de dados PostgreSQL estabelecida com sucesso.');
+    console.log('📦 Conectado ao PostgreSQL com sucesso.');
 
     app.listen(PORT, () => {
-      console.log(`Servidor rodando em http://localhost:${PORT}`);
+      console.log(`🚀 Servidor rodando em: http://localhost:${PORT}`);
+      console.log(`📄 Swagger disponível em: http://localhost:${PORT}/docs`);
     });
   } catch (error) {
-    console.error('Erro ao conectar com o banco de dados:', error);
+    console.error('❌ Falha ao conectar com o banco de dados:', error);
   }
 }
 
