@@ -12,28 +12,20 @@ export class GameController {
       console.error(erro);
 
       return res.status(500).json({
-        mensagem: 'Erro ao listar jogos.',
+        mensagem: 'Erro ao listar jogos.'
       });
     }
   }
 
   // GET /games/:id - Busca um jogo por ID
-  public static async buscarPorId(
-    req: Request,
-    res: Response,
-  ): Promise<Response> {
+  public static async buscarPorId(req: Request, res: Response): Promise<Response> {
     try {
       const parametroId = req.params.id as string;
       const id = parseInt(parametroId, 10);
 
-      if (
-        !/^\d+$/.test(parametroId) ||
-        isNaN(id) ||
-        id <= 0 ||
-        id > 2147483647
-      ) {
+      if (!/^\d+$/.test(parametroId) || isNaN(id) || id <= 0 || id > 2147483647) {
         return res.status(400).json({
-          mensagem: 'O ID informado deve ser um inteiro positivo válido.',
+          mensagem: 'O ID informado deve ser um inteiro positivo válido.'
         });
       }
 
@@ -41,7 +33,7 @@ export class GameController {
 
       if (!jogo) {
         return res.status(404).json({
-          mensagem: 'Jogo não encontrado.',
+          mensagem: 'Jogo não encontrado.'
         });
       }
 
@@ -50,7 +42,7 @@ export class GameController {
       console.error(erro);
 
       return res.status(500).json({
-        mensagem: 'Erro ao buscar jogo.',
+        mensagem: 'Erro ao buscar jogo.'
       });
     }
   }
@@ -58,32 +50,17 @@ export class GameController {
   // POST /games - Cadastra um novo jogo
   public static async criar(req: Request, res: Response): Promise<Response> {
     try {
-      if (
-        !req.body ||
-        typeof req.body !== 'object' ||
-        Array.isArray(req.body)
-      ) {
+      if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
         return res.status(400).json({
-          mensagem: 'Envie um objeto JSON com os dados do jogo.',
+          mensagem: 'Envie um objeto JSON com os dados do jogo.'
         });
       }
 
-      const {
-        titulo,
-        desenvolvedora,
-        plataforma,
-        genero,
-        anoLancamento,
-        zerado,
-      } = req.body;
+      const { titulo, desenvolvedora, plataforma, genero, anoLancamento, zerado } = req.body;
 
-      if (
-        typeof titulo !== 'string' ||
-        titulo.trim() === '' ||
-        titulo.trim().length > 255
-      ) {
+      if (typeof titulo !== 'string' || titulo.trim() === '' || titulo.trim().length > 255) {
         return res.status(400).json({
-          mensagem: 'O título deve conter entre 1 e 255 caracteres.',
+          mensagem: 'O título deve conter entre 1 e 255 caracteres.'
         });
       }
 
@@ -93,7 +70,7 @@ export class GameController {
         desenvolvedora.trim().length > 255
       ) {
         return res.status(400).json({
-          mensagem: 'A desenvolvedora deve conter entre 1 e 255 caracteres.',
+          mensagem: 'A desenvolvedora deve conter entre 1 e 255 caracteres.'
         });
       }
 
@@ -103,17 +80,13 @@ export class GameController {
         plataforma.trim().length > 255
       ) {
         return res.status(400).json({
-          mensagem: 'A plataforma deve conter entre 1 e 255 caracteres.',
+          mensagem: 'A plataforma deve conter entre 1 e 255 caracteres.'
         });
       }
 
-      if (
-        typeof genero !== 'string' ||
-        genero.trim() === '' ||
-        genero.trim().length > 255
-      ) {
+      if (typeof genero !== 'string' || genero.trim() === '' || genero.trim().length > 255) {
         return res.status(400).json({
-          mensagem: 'O gênero deve conter entre 1 e 255 caracteres.',
+          mensagem: 'O gênero deve conter entre 1 e 255 caracteres.'
         });
       }
 
@@ -124,23 +97,23 @@ export class GameController {
         anoLancamento > 9999
       ) {
         return res.status(400).json({
-          mensagem: 'O ano de lançamento deve ser um inteiro entre 1 e 9999.',
+          mensagem: 'O ano de lançamento deve ser um inteiro entre 1 e 9999.'
         });
       }
 
       if (typeof zerado !== 'boolean') {
         return res.status(400).json({
-          mensagem: 'O campo zerado deve ser true ou false.',
+          mensagem: 'O campo zerado deve ser true ou false.'
         });
       }
 
       const jogoExistente = await Game.findOne({
-        where: { titulo: titulo.trim() },
+        where: { titulo: titulo.trim() }
       });
 
       if (jogoExistente) {
         return res.status(400).json({
-          mensagem: 'Já existe um jogo cadastrado com esse título.',
+          mensagem: 'Já existe um jogo cadastrado com esse título.'
         });
       }
 
@@ -150,7 +123,7 @@ export class GameController {
         plataforma: plataforma.trim(),
         genero: genero.trim(),
         anoLancamento,
-        zerado,
+        zerado
       });
 
       return res.status(201).json(novoJogo);
@@ -158,76 +131,53 @@ export class GameController {
       console.error(erro);
 
       return res.status(500).json({
-        mensagem: 'Erro ao cadastrar jogo.',
+        mensagem: 'Erro ao cadastrar jogo.'
       });
     }
   }
 
   // PUT /games/:id - Atualiza os campos enviados de um jogo
-  public static async atualizar(
-    req: Request,
-    res: Response,
-  ): Promise<Response> {
+  public static async atualizar(req: Request, res: Response): Promise<Response> {
     try {
       const parametroId = req.params.id as string;
       const id = parseInt(parametroId, 10);
 
-      if (
-        !/^\d+$/.test(parametroId) ||
-        isNaN(id) ||
-        id <= 0 ||
-        id > 2147483647
-      ) {
+      if (!/^\d+$/.test(parametroId) || isNaN(id) || id <= 0 || id > 2147483647) {
         return res.status(400).json({
-          mensagem: 'O ID informado deve ser um inteiro positivo válido.',
+          mensagem: 'O ID informado deve ser um inteiro positivo válido.'
         });
       }
 
-      if (
-        !req.body ||
-        typeof req.body !== 'object' ||
-        Array.isArray(req.body)
-      ) {
+      if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
         return res.status(400).json({
-          mensagem: 'Envie um objeto JSON com os dados do jogo.',
+          mensagem: 'Envie um objeto JSON com os dados do jogo.'
         });
       }
 
-      const {
-        titulo,
-        desenvolvedora,
-        plataforma,
-        genero,
-        anoLancamento,
-        zerado,
-      } = req.body;
+      const { titulo, desenvolvedora, plataforma, genero, anoLancamento, zerado } = req.body;
 
       const jogo = await Game.findByPk(id);
 
       if (!jogo) {
         return res.status(404).json({
-          mensagem: 'Jogo não encontrado.',
+          mensagem: 'Jogo não encontrado.'
         });
       }
 
       if (titulo !== undefined) {
-        if (
-          typeof titulo !== 'string' ||
-          titulo.trim() === '' ||
-          titulo.trim().length > 255
-        ) {
+        if (typeof titulo !== 'string' || titulo.trim() === '' || titulo.trim().length > 255) {
           return res.status(400).json({
-            mensagem: 'O título deve conter entre 1 e 255 caracteres.',
+            mensagem: 'O título deve conter entre 1 e 255 caracteres.'
           });
         }
 
         const jogoExistente = await Game.findOne({
-          where: { titulo: titulo.trim() },
+          where: { titulo: titulo.trim() }
         });
 
         if (jogoExistente && jogoExistente.id !== id) {
           return res.status(400).json({
-            mensagem: 'Já existe um jogo cadastrado com esse título.',
+            mensagem: 'Já existe um jogo cadastrado com esse título.'
           });
         }
 
@@ -241,7 +191,7 @@ export class GameController {
           desenvolvedora.trim().length > 255
         ) {
           return res.status(400).json({
-            mensagem: 'A desenvolvedora deve conter entre 1 e 255 caracteres.',
+            mensagem: 'A desenvolvedora deve conter entre 1 e 255 caracteres.'
           });
         }
 
@@ -255,7 +205,7 @@ export class GameController {
           plataforma.trim().length > 255
         ) {
           return res.status(400).json({
-            mensagem: 'A plataforma deve conter entre 1 e 255 caracteres.',
+            mensagem: 'A plataforma deve conter entre 1 e 255 caracteres.'
           });
         }
 
@@ -263,13 +213,9 @@ export class GameController {
       }
 
       if (genero !== undefined) {
-        if (
-          typeof genero !== 'string' ||
-          genero.trim() === '' ||
-          genero.trim().length > 255
-        ) {
+        if (typeof genero !== 'string' || genero.trim() === '' || genero.trim().length > 255) {
           return res.status(400).json({
-            mensagem: 'O gênero deve conter entre 1 e 255 caracteres.',
+            mensagem: 'O gênero deve conter entre 1 e 255 caracteres.'
           });
         }
 
@@ -284,7 +230,7 @@ export class GameController {
           anoLancamento > 9999
         ) {
           return res.status(400).json({
-            mensagem: 'O ano de lançamento deve ser um inteiro entre 1 e 9999.',
+            mensagem: 'O ano de lançamento deve ser um inteiro entre 1 e 9999.'
           });
         }
 
@@ -294,7 +240,7 @@ export class GameController {
       if (zerado !== undefined) {
         if (typeof zerado !== 'boolean') {
           return res.status(400).json({
-            mensagem: 'O campo zerado deve ser true ou false.',
+            mensagem: 'O campo zerado deve ser true ou false.'
           });
         }
 
@@ -308,28 +254,20 @@ export class GameController {
       console.error(erro);
 
       return res.status(500).json({
-        mensagem: 'Erro ao atualizar jogo.',
+        mensagem: 'Erro ao atualizar jogo.'
       });
     }
   }
 
   // DELETE /games/:id - Remove um jogo
-  public static async deletar(
-    req: Request,
-    res: Response,
-  ): Promise<Response> {
+  public static async deletar(req: Request, res: Response): Promise<Response> {
     try {
       const parametroId = req.params.id as string;
       const id = parseInt(parametroId, 10);
 
-      if (
-        !/^\d+$/.test(parametroId) ||
-        isNaN(id) ||
-        id <= 0 ||
-        id > 2147483647
-      ) {
+      if (!/^\d+$/.test(parametroId) || isNaN(id) || id <= 0 || id > 2147483647) {
         return res.status(400).json({
-          mensagem: 'O ID informado deve ser um inteiro positivo válido.',
+          mensagem: 'O ID informado deve ser um inteiro positivo válido.'
         });
       }
 
@@ -337,7 +275,7 @@ export class GameController {
 
       if (!jogo) {
         return res.status(404).json({
-          mensagem: 'Jogo não encontrado.',
+          mensagem: 'Jogo não encontrado.'
         });
       }
 
@@ -348,7 +286,7 @@ export class GameController {
       console.error(erro);
 
       return res.status(500).json({
-        mensagem: 'Erro ao excluir jogo.',
+        mensagem: 'Erro ao excluir jogo.'
       });
     }
   }
