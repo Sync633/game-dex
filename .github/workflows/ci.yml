@@ -1,38 +1,54 @@
-name: CI Pipeline
+name: Pipeline CI - GameDex
 
 on:
   push:
     branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
-  validacao:
+  validacao-at1:
+    name: Validar Backend (Qualidade e Build)
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do Repositório
+      - name: 1. Baixar o código-fonte
         uses: actions/checkout@v4
 
-      - name: Configurar Node.js
+      - name: 2. Habilitar o pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: 3. Configurar o Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 24
 
-      - name: Instalar pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
+      - name: 4. Instalar Dependências do Backend
+        run: |
+          cd backend
+          pnpm install
 
-      - name: Instalar Dependências
-        run: pnpm install
+      - name: 5. Validar Padronização de Código (ESLint)
+        run: |
+          cd backend
+          pnpm run lint
 
-      - name: Executar Linter (Qualidade de Código)
-        working-directory: ./backend
-        run: pnpm lint
+      - name: 6. Checagem de Tipos (TypeScript)
+        run: |
+          cd backend
+          pnpm run typecheck
 
-      - name: Validar Tipagem (Typecheck)
-        working-directory: ./backend
-        run: pnpm typecheck
+      - name: 7. Compilar o Backend (Build)
+        run: |
+          cd backend
+          pnpm run build
 
-      - name: Build de Produção
-        working-directory: ./backend
-        run: pnpm build
+      - name: 8. Resumo da Execução
+        run: |
+          echo "### Resumo da Execução do Pipeline de CI 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "Integração Contínua (AT1) concluída com sucesso!" >> $GITHUB_STEP_SUMMARY
+          echo "- Autor: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
