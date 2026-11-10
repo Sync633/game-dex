@@ -1,11 +1,14 @@
 {
   "name": "game-dex",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky"
+    "compose:up": "docker compose up -d",
+    "compose:build": "docker compose up -d --build",
+    "compose:down": "docker compose down",
+    "compose:logs": "docker compose logs -f",
+    "dev:backend": "pnpm --filter backend dev",
+    "dev:app": "pnpm --filter app dev",
+    "migrate": "pnpm --filter backend npx sequelize-cli db:migrate"
   },
   "keywords": [],
   "author": "",
