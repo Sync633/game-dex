@@ -1,75 +1,104 @@
-# React + TypeScript + Vite
+# GameDex App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface web (SPA) para gerenciar um catálogo pessoal de jogos e acompanhar quais já foram zerados.
 
-Currently, two official plugins are available:
+Desenvolvida para a AT2 da disciplina de Laboratório de Desenvolvimento Web.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tecnologias
 
-## React Compiler
+- React 19, TypeScript e Vite
+- Tailwind CSS e shadcn/ui (Radix UI, Lucide e Sonner)
+- React Router DOM
+- Fetch API (consumo da API REST do GameDex)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Pré-requisitos
 
-## Expanding the ESLint configuration
+- Node.js 24
+- pnpm 11
+- Backend do GameDex em execução (`http://localhost:3000`)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Instalação e configuração
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Na raiz do repositório, instale as dependências:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+pnpm install
+cd app
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Copie `.env.example` para `.env`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+No CMD do Windows:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bat
+copy .env.example .env
 ```
+
+No Linux ou macOS:
+
+```bash
+cp .env.example .env
+```
+
+Confira o conteúdo do `.env`:
+
+```dotenv
+VITE_API_URL=http://localhost:3000
+```
+
+O arquivo `.env` é ignorado pelo Git e não deve ser versionado.
+
+## Execução
+
+Dentro da pasta `app`:
+
+```bash
+pnpm dev
+```
+
+Ou a partir da raiz do monorepo:
+
+```bash
+pnpm dev:app
+```
+
+Acesse no navegador: http://localhost:5173
+
+## Validação e build
+
+Dentro de `app`:
+
+```bash
+pnpm lint
+pnpm build
+pnpm preview
+```
+
+## Funcionalidades
+
+- **Dashboard com métricas:** total de jogos cadastrados, jogos zerados e jogos na fila.
+- **CRUD completo conectado à API REST:**
+  - `GET /games` — listagem inicial em cards responsivos com estado de carregamento (loading) e estado vazio (empty state).
+  - `POST /games` — cadastro de novo jogo em modal (`Dialog`) com validação e conversão de tipos.
+  - `PUT /games/:id` — edição completa dos dados no modal e alternância rápida do status `zerado` direto no card.
+  - `DELETE /games/:id` — exclusão com modal de confirmação.
+- **Feedback visual:** notificações flutuantes (`Sonner`) para sucesso e mensagens de erro retornadas pela API.
+
+## Rotas
+
+| Rota | Tela |
+| --- | --- |
+| `/` | Biblioteca de jogos (Dashboard e CRUD) |
+| `/sobre` | Informações sobre o projeto e a stack utilizada |
+
+## Organização do frontend
+
+| Caminho | Responsabilidade |
+| --- | --- |
+| `src/components/ui/` | Componentes oficiais do shadcn/ui (`card`, `button`, `input`, `label`, `badge`, `dialog`, `sonner`) |
+| `src/components/layout/` | Layout compartilhado (`AppLayout`) com barra de navegação |
+| `src/components/games/` | Modais de cadastro/edição (`GameFormDialog`) e confirmação de exclusão (`DeleteGameDialog`) |
+| `src/pages/` | Páginas da SPA (`GamesPage` e `SobrePage`) |
+| `src/services/` | Cliente HTTP (`gameService.ts`) para comunicação com a API |
+| `src/types/` | Interfaces TypeScript da entidade `Game` e erros da API |
+| `src/App.tsx` | Configuração das rotas (`BrowserRouter`) e do `<Toaster />` |
