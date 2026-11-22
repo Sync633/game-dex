@@ -16,6 +16,7 @@ app.get('/api/health', (_req, res) => {
     service: 'gamedex-api',
     uptime: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
+    "version": "1.0.1"
   });
 });
 
