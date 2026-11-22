@@ -1,5 +1,5 @@
 import {
-  CheckCircle2,
+  Check,
   Circle,
   Gamepad2,
   Loader2,
@@ -7,7 +7,7 @@ import {
   Plus,
   Search,
   Trash2,
-  Trophy,
+  X,
 } from 'lucide-react'
 import type React from 'react'
 import { useEffect, useState } from 'react'
@@ -34,6 +34,17 @@ import {
 import type { CreateGameInput, Game } from '@/types/game'
 
 type FilterStatus = 'todos' | 'fila' | 'zerados'
+
+function getGameMonogram(titulo: string): string {
+  const palavras = titulo
+    .trim()
+    .split(/\s+/)
+    .filter((parte) => /[a-zA-Z0-9À-ÿ]/.test(parte))
+
+  if (palavras.length === 0) return 'GD'
+  if (palavras.length === 1) return palavras[0].slice(0, 2).toUpperCase()
+  return `${palavras[0][0]}${palavras[1][0]}`.toUpperCase()
+}
 
 export function GamesPage() {
   const [games, setGames] = useState<Game[]>([])
@@ -177,125 +188,166 @@ export function GamesPage() {
   })
 
   return (
-    <div className="space-y-6">
-      {/* Cabeçalho da biblioteca */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-            Catálogo Pessoal
-          </p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight">
-            Minha Biblioteca
-          </h1>
+    <div className="space-y-8">
+      {/* Cabeçalho editorial + resumo integrado da coleção */}
+      <section className="space-y-6 border-b border-border/80 pb-6">
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div className="space-y-2">
+            <p className="font-mono-tech text-xs font-medium tracking-[0.2em] text-primary uppercase">
+              Acervo Pessoal
+            </p>
+            <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
+              Minha Biblioteca
+            </h1>
+          </div>
+
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between md:gap-6">
+            {/* Métricas integradas */}
+            <div className="space-y-2">
+              <div className="font-mono-tech flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+                <span className="text-foreground">
+                  <strong className="font-semibold tabular-nums">
+                    {String(totalJogos).padStart(2, '0')}
+                  </strong>{' '}
+                  <span className="text-muted-foreground">jogos</span>
+                </span>
+                <span className="text-border">/</span>
+                <span className="text-primary">
+                  <strong className="font-semibold tabular-nums">
+                    {String(jogosZerados).padStart(2, '0')}
+                  </strong>{' '}
+                  <span className="text-muted-foreground">zerados</span>
+                </span>
+                <span className="text-border">/</span>
+                <span className="text-foreground">
+                  <strong className="font-semibold tabular-nums">
+                    {String(jogosPendentes).padStart(2, '0')}
+                  </strong>{' '}
+                  <span className="text-muted-foreground">na fila</span>
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div
+                  className="h-1 flex-1 overflow-hidden bg-secondary sm:w-44"
+                  role="progressbar"
+                  aria-valuenow={percentualZerado}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label="Progresso de jogos zerados"
+                >
+                  <div
+                    className="h-full bg-primary transition-all duration-300"
+                    style={{ width: `${percentualZerado}%` }}
+                  />
+                </div>
+                <span className="font-mono-tech text-xs text-muted-foreground tabular-nums">
+                  {percentualZerado}%
+                </span>
+              </div>
+            </div>
+
+            <Button
+              onClick={handleOpenCreate}
+              className="h-10 px-4 font-semibold tracking-tight"
+            >
+              <Plus className="mr-1.5 h-4 w-4" />
+              Adicionar jogo
+            </Button>
+          </div>
         </div>
 
-        <Button onClick={handleOpenCreate} className="font-semibold">
-          <Plus className="mr-1.5 h-4 w-4" />
-          Adicionar jogo
-        </Button>
-      </div>
-
-      {/* Painel compacto de progresso + busca e filtros */}
-      <Card className="border-border/80 bg-card/85">
-        <CardContent className="space-y-4 p-4 sm:p-5">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold tabular-nums">
-                  {totalJogos}
-                </span>
-                <span className="text-muted-foreground">na biblioteca</span>
-              </div>
-
-              <span className="hidden h-4 w-px bg-border sm:inline-block" />
-
-              <div className="flex items-center gap-1.5">
-                <Trophy className="h-4 w-4 text-primary" />
-                <span className="font-semibold tabular-nums">
-                  {jogosZerados}
-                </span>
-                <span className="text-muted-foreground">zerados</span>
-              </div>
-
-              <div className="flex items-center gap-1.5">
-                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="font-semibold tabular-nums">
-                  {jogosPendentes}
-                </span>
-                <span className="text-muted-foreground">na fila</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 md:w-56">
-              <div className="h-2 flex-1 overflow-hidden rounded-sm bg-secondary">
-                <div
-                  className="h-full bg-primary transition-all duration-300"
-                  style={{ width: `${percentualZerado}%` }}
-                />
-              </div>
-              <span className="w-10 text-right text-xs font-semibold text-muted-foreground tabular-nums">
-                {percentualZerado}%
-              </span>
-            </div>
+        {/* Barra de pesquisa e filtros */}
+        <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative flex-1 sm:max-w-md">
+            <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={busca}
+              onChange={handleSearchChange}
+              placeholder="Filtrar por título, estúdio, plataforma ou gênero..."
+              aria-label="Pesquisar jogos na biblioteca"
+              className="h-9 border-border/80 bg-card/70 pr-8 pl-9 text-sm placeholder:text-muted-foreground/75"
+            />
+            {busca && (
+              <button
+                type="button"
+                onClick={() => setBusca('')}
+                aria-label="Limpar busca"
+                className="absolute top-1/2 right-2.5 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
 
-          <div className="flex flex-col gap-3 border-t border-border/70 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="relative flex-1 sm:max-w-sm">
-              <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={busca}
-                onChange={handleSearchChange}
-                placeholder="Buscar por título, estúdio, plataforma ou gênero..."
-                className="pl-9"
-              />
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              <Button
-                type="button"
-                size="sm"
-                variant={filtro === 'todos' ? 'default' : 'outline'}
-                onClick={() => setFiltro('todos')}
-              >
-                Todos ({totalJogos})
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant={filtro === 'fila' ? 'default' : 'outline'}
-                onClick={() => setFiltro('fila')}
-              >
-                Na fila ({jogosPendentes})
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant={filtro === 'zerados' ? 'default' : 'outline'}
-                onClick={() => setFiltro('zerados')}
-              >
-                Zerados ({jogosZerados})
-              </Button>
-            </div>
+          <div
+            className="flex flex-wrap items-center gap-1"
+            role="group"
+            aria-label="Filtrar jogos por status"
+          >
+            <Button
+              type="button"
+              size="sm"
+              variant={filtro === 'todos' ? 'secondary' : 'ghost'}
+              onClick={() => setFiltro('todos')}
+              className={`font-mono-tech h-8 px-3 text-xs ${
+                filtro === 'todos'
+                  ? 'border border-border text-foreground'
+                  : 'text-muted-foreground'
+              }`}
+            >
+              Todos · {totalJogos}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={filtro === 'fila' ? 'secondary' : 'ghost'}
+              onClick={() => setFiltro('fila')}
+              className={`font-mono-tech h-8 px-3 text-xs ${
+                filtro === 'fila'
+                  ? 'border border-border text-foreground'
+                  : 'text-muted-foreground'
+              }`}
+            >
+              Na fila · {jogosPendentes}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={filtro === 'zerados' ? 'secondary' : 'ghost'}
+              onClick={() => setFiltro('zerados')}
+              className={`font-mono-tech h-8 px-3 text-xs ${
+                filtro === 'zerados'
+                  ? 'border border-primary/40 text-primary'
+                  : 'text-muted-foreground'
+              }`}
+            >
+              Zerados · {jogosZerados}
+            </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      {/* Estados visuais: Loading, Empty State, Sem resultados ou Grid */}
+      {/* Estados visuais: Loading, Empty State, Sem resultados ou Coleção */}
       {loading ? (
-        <Card className="border-border/80">
-          <CardContent className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-            <Loader2 className="mb-3 h-8 w-8 animate-spin text-primary" />
-            <p>Carregando biblioteca de jogos...</p>
+        <Card className="border-border/70 bg-card/60">
+          <CardContent className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+            <Loader2 className="mb-3 h-7 w-7 animate-spin text-primary" />
+            <p className="font-mono-tech text-xs tracking-wider uppercase">
+              Carregando catálogo...
+            </p>
           </CardContent>
         </Card>
       ) : games.length === 0 ? (
-        <Card className="border-dashed border-border">
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <Gamepad2 className="mb-3 h-10 w-10 text-muted-foreground" />
-            <h2 className="text-lg font-semibold">Nenhum jogo cadastrado</h2>
-            <p className="mb-5 max-w-sm text-sm text-muted-foreground">
-              Sua biblioteca está vazia. Cadastre seu primeiro jogo para começar
-              a organizar o que já zerou.
+        <Card className="border-dashed border-border bg-card/40">
+          <CardContent className="flex flex-col items-center justify-center py-20 text-center">
+            <Gamepad2 className="mb-4 h-9 w-9 text-primary/70" />
+            <h2 className="font-display text-xl font-semibold">
+              Sua estante ainda está vazia
+            </h2>
+            <p className="mt-1.5 mb-6 max-w-sm text-sm text-muted-foreground">
+              Adicione o primeiro título para montar seu acervo pessoal e
+              acompanhar o progresso da sua coleção.
             </p>
             <Button onClick={handleOpenCreate}>
               <Plus className="mr-1.5 h-4 w-4" />
@@ -304,13 +356,13 @@ export function GamesPage() {
           </CardContent>
         </Card>
       ) : jogosFiltrados.length === 0 ? (
-        <Card className="border-border/80">
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-base font-medium">
-              Nenhum jogo encontrado para esse filtro
+        <Card className="border-border/70 bg-card/50">
+          <CardContent className="flex flex-col items-center justify-center py-14 text-center">
+            <p className="font-display text-lg font-medium">
+              Nenhum título encontrado
             </p>
-            <p className="mt-1 mb-4 text-sm text-muted-foreground">
-              Tente limpar a busca ou trocar a aba selecionada.
+            <p className="mt-1 mb-5 text-sm text-muted-foreground">
+              Ajuste o termo pesquisado ou troque o filtro de status.
             </p>
             <Button
               type="button"
@@ -326,97 +378,147 @@ export function GamesPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {jogosFiltrados.map((game) => (
-            <Card
-              key={game.id}
-              className="group relative flex flex-col justify-between overflow-hidden border-border/80 bg-card/90 transition-all hover:border-primary/50 hover:bg-card"
-            >
-              {/* Faixa de status no topo do card */}
-              <div
-                className={`h-1 w-full ${
-                  game.zerado ? 'bg-primary' : 'bg-border'
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          {jogosFiltrados.map((game, index) => {
+            const catalogIndex = String(index + 1).padStart(2, '0')
+            const monogram = getGameMonogram(game.titulo)
+
+            return (
+              <Card
+                key={game.id}
+                className={`group relative flex flex-col justify-between overflow-hidden border-border/80 bg-card transition-all duration-200 hover:bg-accent/55 ${
+                  game.zerado
+                    ? 'border-l-2 border-l-primary hover:border-primary/40 hover:border-l-primary'
+                    : 'border-l-2 border-l-border hover:border-foreground/25 hover:border-l-foreground/40'
                 }`}
-              />
-
-              <CardHeader className="pb-3">
-                <div className="mb-1.5 flex items-center justify-between gap-2">
-                  <span className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
-                    {game.plataforma} · {game.anoLancamento}
-                  </span>
-                  <Badge
-                    variant={game.zerado ? 'default' : 'secondary'}
-                    className="rounded-sm px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase"
-                  >
-                    {game.zerado ? 'Zerado' : 'Na fila'}
-                  </Badge>
-                </div>
-
-                <CardTitle className="text-xl leading-snug font-bold tracking-tight">
-                  {game.titulo}
-                </CardTitle>
-                <CardDescription className="text-sm">
-                  {game.desenvolvedora}
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent className="pt-0 pb-4">
-                <Badge
-                  variant="outline"
-                  className="rounded-sm border-border/80 bg-secondary/40 text-xs font-normal text-muted-foreground"
+              >
+                {/* Monograma tipográfico bem sutil no fundo */}
+                <span
+                  aria-hidden="true"
+                  className={`font-display pointer-events-none absolute right-5 bottom-14 select-none text-7xl leading-none font-bold tracking-tighter transition-opacity duration-200 ${
+                    game.zerado
+                      ? 'text-primary/[0.03]'
+                      : 'text-foreground/[0.02]'
+                  }`}
                 >
-                  {game.genero}
-                </Badge>
-              </CardContent>
+                  {monogram}
+                </span>
 
-              <CardFooter className="flex items-center justify-between gap-2 border-t border-border/70 bg-background/30 px-5 py-3">
-                <Button
-                  type="button"
-                  variant={game.zerado ? 'secondary' : 'outline'}
-                  size="sm"
-                  disabled={togglingId === game.id}
-                  onClick={() => void handleToggleZerado(game)}
-                >
-                  {game.zerado ? (
-                    <>
-                      <CheckCircle2 className="mr-1.5 h-3.5 w-3.5 text-primary" />
-                      Zerado
-                    </>
-                  ) : (
-                    <>
-                      <Circle className="mr-1.5 h-3.5 w-3.5" />
-                      Marcar zerado
-                    </>
-                  )}
-                </Button>
+                <CardHeader className="relative z-10 space-y-4 pb-4">
+                  {/* Linha superior de catalogação */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="font-mono-tech flex items-center gap-2 text-xs tracking-wider text-muted-foreground uppercase">
+                      <span className="text-foreground/75">#{catalogIndex}</span>
+                      <span className="text-border">·</span>
+                      <span className="text-foreground/85">
+                        {game.anoLancamento}
+                      </span>
+                    </div>
 
-                <div className="flex items-center gap-1.5">
+                    <Badge
+                      variant={game.zerado ? 'default' : 'outline'}
+                      className={`font-mono-tech rounded-xs px-2.5 py-0.5 text-[11px] font-medium tracking-[0.12em] uppercase ${
+                        game.zerado
+                          ? 'border border-primary/35 bg-primary/15 text-primary hover:bg-primary/20'
+                          : 'border-border/70 bg-secondary/45 text-muted-foreground'
+                      }`}
+                    >
+                      {game.zerado ? 'Zerado' : 'Na fila'}
+                    </Badge>
+                  </div>
+
+                  {/* Título expressivo + desenvolvedora */}
+                  <div className="space-y-1.5">
+                    <CardTitle className="font-display text-2xl leading-[1.15] font-bold tracking-tight text-foreground">
+                      {game.titulo}
+                    </CardTitle>
+                    <CardDescription className="text-sm text-muted-foreground">
+                      {game.desenvolvedora}
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+
+                {/* Metadados de ficha técnica */}
+                <CardContent className="relative z-10 pt-0 pb-5">
+                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border/50 pt-4">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono-tech text-xs tracking-wider text-muted-foreground uppercase">
+                        Plataforma
+                      </span>
+                      <Badge
+                        variant="secondary"
+                        className="font-mono-tech rounded-xs bg-secondary/85 px-2 py-0.5 text-xs font-normal text-secondary-foreground"
+                      >
+                        {game.plataforma}
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono-tech text-xs tracking-wider text-muted-foreground uppercase">
+                        Gênero
+                      </span>
+                      <span className="text-sm font-medium text-foreground/90">
+                        {game.genero}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+
+                {/* Ações no rodapé com destaque no hover */}
+                <CardFooter className="relative z-10 flex items-center justify-between gap-2 border-t border-border/60 bg-background/35 px-5 py-3">
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0"
-                    title="Editar jogo"
-                    aria-label={`Editar ${game.titulo}`}
-                    onClick={() => handleOpenEdit(game)}
+                    disabled={togglingId === game.id}
+                    onClick={() => void handleToggleZerado(game)}
+                    className={`h-8 px-2.5 text-xs font-medium ${
+                      game.zerado
+                        ? 'text-primary hover:bg-primary/15 hover:text-primary'
+                        : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                    }`}
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    {game.zerado ? (
+                      <>
+                        <Check className="mr-1.5 h-3.5 w-3.5" />
+                        Zerado
+                      </>
+                    ) : (
+                      <>
+                        <Circle className="mr-1.5 h-3.5 w-3.5" />
+                        Marcar zerado
+                      </>
+                    )}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    className="h-8 w-8 p-0"
-                    title="Excluir jogo"
-                    aria-label={`Excluir ${game.titulo}`}
-                    onClick={() => setDeletingGame(game)}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </CardFooter>
-            </Card>
-          ))}
+
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 border border-transparent p-0 text-muted-foreground transition-colors group-hover:text-foreground/75 hover:border-border hover:bg-secondary hover:text-foreground"
+                      title="Editar jogo"
+                      aria-label={`Editar ${game.titulo}`}
+                      onClick={() => handleOpenEdit(game)}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 border border-transparent p-0 text-muted-foreground transition-colors group-hover:text-foreground/75 hover:border-destructive/40 hover:bg-destructive/20 hover:text-destructive"
+                      title="Excluir jogo"
+                      aria-label={`Excluir ${game.titulo}`}
+                      onClick={() => setDeletingGame(game)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
+            )
+          })}
         </div>
       )}
 

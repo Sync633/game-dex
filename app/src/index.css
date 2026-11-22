@@ -85,26 +85,26 @@
 
 .dark {
   color-scheme: dark;
-  --radius: 0.475rem;
-  --background: #0c1016;
-  --foreground: #edf2f7;
-  --card: #141a23;
-  --card-foreground: #edf2f7;
-  --popover: #141a23;
-  --popover-foreground: #edf2f7;
-  --primary: #2b8cff;
-  --primary-foreground: #ffffff;
-  --secondary: #1c2432;
-  --secondary-foreground: #e2e8f0;
-  --muted: #18202c;
-  --muted-foreground: #8b9bb4;
-  --accent: #1f2938;
-  --accent-foreground: #f8fafc;
-  --destructive: #e5484d;
-  --destructive-foreground: #ffffff;
-  --border: #232e40;
-  --input: #232e40;
-  --ring: #2b8cff;
+  --radius: 0.25rem;
+  --background: #0d0d0c;
+  --foreground: #f2efe9;
+  --card: #141412;
+  --card-foreground: #f2efe9;
+  --popover: #171714;
+  --popover-foreground: #f2efe9;
+  --primary: #e09f3e;
+  --primary-foreground: #12100c;
+  --secondary: #1d1c19;
+  --secondary-foreground: #e5e1d8;
+  --muted: #181715;
+  --muted-foreground: #928e85;
+  --accent: #22201c;
+  --accent-foreground: #f2efe9;
+  --destructive: #c84b45;
+  --destructive-foreground: #faf7f2;
+  --border: #262521;
+  --input: #2a2924;
+  --ring: #e09f3e;
 }
 
 @layer base {
@@ -113,14 +113,19 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background-image:
-      radial-gradient(ellipse 75% 40% at 50% -5%, rgba(43, 140, 255, 0.16), transparent 65%),
-      radial-gradient(ellipse 40% 30% at 95% 100%, rgba(43, 140, 255, 0.06), transparent 60%);
+      radial-gradient(ellipse 65% 32% at 15% -8%, rgba(224, 159, 62, 0.08), transparent 65%),
+      radial-gradient(ellipse 45% 28% at 92% 108%, rgba(224, 159, 62, 0.04), transparent 60%);
     background-attachment: fixed;
   }
+}
 
-  html {
-    @apply font-sans;
-  }
+.font-display {
+  font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+}
+
+.font-mono-tech {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 }
