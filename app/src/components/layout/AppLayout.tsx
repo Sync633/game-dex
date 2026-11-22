@@ -5,22 +5,27 @@ export function AppLayout() {
   const { pathname } = useLocation()
 
   const linkClass = (path: string) =>
-    `text-base font-medium transition-colors ${
+    `relative flex h-full items-center px-1 text-base font-medium transition-colors ${
       pathname === path
-        ? 'text-foreground'
+        ? 'text-foreground after:absolute after:right-0 after:bottom-0 after:left-0 after:h-0.5 after:bg-primary'
         : 'text-muted-foreground hover:text-foreground'
     }`
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4">
-          <Link to="/" className="flex items-center gap-2.5 font-bold text-2xl tracking-tight">
-            <Gamepad2 className="h-8 w-8 text-primary" />
+    <div className="min-h-screen text-foreground">
+      <header className="sticky top-0 z-10 border-b border-border/80 bg-background/80 backdrop-blur-md">
+        <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-4">
+          <Link
+            to="/"
+            className="flex items-center gap-3 text-xl font-bold tracking-tight"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/15 text-primary ring-1 ring-primary/30">
+              <Gamepad2 className="h-5 w-5" />
+            </span>
             <span>GameDex</span>
           </Link>
 
-          <nav className="flex items-center gap-8">
+          <nav className="flex h-full items-center gap-7">
             <Link to="/" className={linkClass('/')}>
               Biblioteca
             </Link>
