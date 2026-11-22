@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { Toaster } from '@/components/ui/sonner'
 import { GamesPage } from '@/pages/GamesPage'
@@ -11,6 +11,7 @@ export function App() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<GamesPage />} />
           <Route path="/sobre" element={<SobrePage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
       <Toaster theme="dark" richColors position="top-right" />
