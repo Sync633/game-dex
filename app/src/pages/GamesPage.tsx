@@ -189,7 +189,6 @@ export function GamesPage() {
 
   return (
     <div className="space-y-8">
-      {/* Cabeçalho editorial + resumo integrado da coleção */}
       <section className="space-y-6 border-b border-border/80 pb-6">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
@@ -202,7 +201,6 @@ export function GamesPage() {
           </div>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between md:gap-6">
-            {/* Métricas integradas */}
             <div className="space-y-2">
               <div className="font-mono-tech flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                 <span className="text-foreground">
@@ -257,7 +255,6 @@ export function GamesPage() {
           </div>
         </div>
 
-        {/* Barra de pesquisa e filtros */}
         <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative flex-1 sm:max-w-md">
             <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -328,7 +325,6 @@ export function GamesPage() {
         </div>
       </section>
 
-      {/* Estados visuais: Loading, Empty State, Sem resultados ou Coleção */}
       {loading ? (
         <Card className="border-border/70 bg-card/60">
           <CardContent className="flex flex-col items-center justify-center py-20 text-muted-foreground">
@@ -392,7 +388,6 @@ export function GamesPage() {
                     : 'border-l-2 border-l-border hover:border-foreground/25 hover:border-l-foreground/40'
                 }`}
               >
-                {/* Monograma tipográfico bem sutil no fundo */}
                 <span
                   aria-hidden="true"
                   className={`font-display pointer-events-none absolute right-5 bottom-14 select-none text-7xl leading-none font-bold tracking-tighter transition-opacity duration-200 ${
@@ -405,7 +400,6 @@ export function GamesPage() {
                 </span>
 
                 <CardHeader className="relative z-10 space-y-4 pb-4">
-                  {/* Linha superior de catalogação */}
                   <div className="flex items-center justify-between gap-2">
                     <div className="font-mono-tech flex items-center gap-2 text-xs tracking-wider text-muted-foreground uppercase">
                       <span className="text-foreground/75">#{catalogIndex}</span>
@@ -427,7 +421,6 @@ export function GamesPage() {
                     </Badge>
                   </div>
 
-                  {/* Título expressivo + desenvolvedora */}
                   <div className="space-y-1.5">
                     <CardTitle className="font-display text-2xl leading-[1.15] font-bold tracking-tight text-foreground">
                       {game.titulo}
@@ -438,7 +431,6 @@ export function GamesPage() {
                   </div>
                 </CardHeader>
 
-                {/* Metadados de ficha técnica */}
                 <CardContent className="relative z-10 pt-0 pb-5">
                   <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border/50 pt-4">
                     <div className="flex items-center gap-2">
@@ -464,7 +456,6 @@ export function GamesPage() {
                   </div>
                 </CardContent>
 
-                {/* Ações no rodapé com destaque no hover */}
                 <CardFooter className="relative z-10 flex items-center justify-between gap-2 border-t border-border/60 bg-background/35 px-5 py-3">
                   <Button
                     type="button"
