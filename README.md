@@ -2,7 +2,7 @@
 
 Projeto full-stack (monorepo) para cadastrar jogos e acompanhar quais já foram zerados.
 
-Desenvolvido nas disciplinas de **Integração e Entrega Contínua (IEC — AT1)** e **Laboratório de Desenvolvimento Web (LDW — AT1 e AT2)**.
+Desenvolvido nas disciplinas de **Integração e Entrega Contínua (IEC — AT1 e AT2)** e **Laboratório de Desenvolvimento Web (LDW — AT1 e AT2)**.
 
 ## Estrutura do repositório
 
@@ -10,7 +10,7 @@ Este repositório utiliza a arquitetura de monorepo gerenciada com `pnpm`:
 
 - **`/backend`**: API RESTful com Node.js, Express, TypeScript, Sequelize e PostgreSQL. *Consulte o [README do backend](./backend/README.md) para detalhes de rotas, Supabase e payloads.*
 - **`/app`**: Frontend SPA com React, TypeScript, Vite, Tailwind CSS, shadcn/ui e React Router DOM. *Consulte o [README do frontend](./app/README.md) para detalhes de configuração, telas e organização.*
-- **`/.github/workflows`**: Esteira de Integração Contínua (CI) no GitHub Actions.
+- **`/.github/workflows`**: Esteiras de Integração Contínua (CI) e Entrega Contínua (CD) no GitHub Actions.
 - **`/.husky`**: Git hooks locais para validação de lint e tipagem antes dos commits.
 
 ## Pré-requisitos
@@ -72,8 +72,20 @@ pnpm dev:app
 | Serviço | Endereço |
 | --- | --- |
 | Frontend (App) | http://localhost:5173 |
+| API (Health Check) | http://localhost:3000/api/health |
 | API (Listagem de jogos) | http://localhost:3000/games |
 | Swagger UI (Documentação da API) | http://localhost:3000/docs |
+
+## Deploy em produção (Render + CI/CD)
+
+A API do backend está publicada no **Render** com runtime Docker, banco PostgreSQL no **Supabase** e entrega contínua via GitHub Actions (`.github/workflows/deploy.yml`). O `Auto-Deploy` permanece desativado (`Off`), disparando a publicação via **Deploy Hook** apenas após a aprovação do CI e do build Docker.
+
+| Recurso | URL Pública |
+| --- | --- |
+| API Base | https://gamedex-api-h9s2.onrender.com |
+| Health Check | https://gamedex-api-h9s2.onrender.com/api/health |
+| Listagem de jogos | https://gamedex-api-h9s2.onrender.com/games |
+| Swagger UI | https://gamedex-api-h9s2.onrender.com/docs |
 
 ## Scripts principais (raiz)
 

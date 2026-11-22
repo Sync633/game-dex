@@ -13,11 +13,34 @@
   ],
   "tags": [
     {
+      "name": "Health",
+      "description": "Monitoramento e integridade da API."
+    },
+    {
       "name": "Games",
       "description": "Gerenciamento do catálogo de jogos."
     }
   ],
   "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Verificar integridade da API",
+        "description": "Retorna o status atual da aplicação e o tempo de atividade (uptime) para monitoramento em produção.",
+        "tags": ["Health"],
+        "responses": {
+          "200": {
+            "description": "API operacional.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthCheck"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/games": {
       "get": {
         "summary": "Listar jogos",
@@ -204,6 +227,28 @@
   },
   "components": {
     "schemas": {
+      "HealthCheck": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "ok"
+          },
+          "service": {
+            "type": "string",
+            "example": "gamedex-api"
+          },
+          "uptime": {
+            "type": "integer",
+            "example": 120
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-22T19:30:00.000Z"
+          }
+        }
+      },
       "Game": {
         "type": "object",
         "properties": {

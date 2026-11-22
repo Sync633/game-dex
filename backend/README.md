@@ -2,7 +2,7 @@
 
 API RESTful para cadastrar jogos e acompanhar quais já foram zerados.
 
-Desenvolvida para a AT1 da disciplina de Laboratório de Desenvolvimento Web.
+Desenvolvida nas disciplinas de **Laboratório de Desenvolvimento Web (LDW — AT1)** e **Integração e Entrega Contínua (IEC — AT1 e AT2)**.
 
 ## Tecnologias
 
@@ -10,15 +10,30 @@ Desenvolvida para a AT1 da disciplina de Laboratório de Desenvolvimento Web.
 - Sequelize e PostgreSQL
 - Swagger UI
 - Docker e Docker Compose
+- GitHub Actions e Render (CI/CD)
+
+## Deploy em produção (Render + CI/CD)
+
+A API é publicada no **Render** com runtime Docker, banco de dados PostgreSQL no **Supabase** e entrega contínua via GitHub Actions (`.github/workflows/deploy.yml`).
+
+O `Auto-Deploy` no Render permanece desativado (`Off`), garantindo que novas versões só sejam publicadas após a aprovação da esteira de CI (ESLint, checagem de tipos e build) e da construção da imagem Docker, que dispara o **Deploy Hook** do Render.
+
+| Recurso | URL Pública |
+| --- | --- |
+| API Base | https://gamedex-api-h9s2.onrender.com |
+| Health Check | https://gamedex-api-h9s2.onrender.com/api/health |
+| Listagem de jogos | https://gamedex-api-h9s2.onrender.com/games |
+| Swagger UI | https://gamedex-api-h9s2.onrender.com/docs |
 
 ## Formas de execução
 
 | Ambiente | API | Banco de dados |
 | --- | --- | --- |
-| Docker local | Container Node.js | PostgreSQL em container |
-| Supabase | Node.js na máquina | PostgreSQL remoto |
+| Docker local | Container Node.js (dev) | PostgreSQL em container |
+| Supabase local | Node.js na máquina | PostgreSQL remoto (Supabase) |
+| Produção (Render) | Container Docker (Node.js Alpine) | PostgreSQL remoto (Supabase) |
 
-Os ambientes possuem bancos independentes. Os dados não são sincronizados entre eles.
+O ambiente Docker local possui banco independente. Os ambientes conectados ao Supabase compartilham o banco configurado nas variáveis de ambiente.
 
 ## Opção 1 — Docker local
 
@@ -50,8 +65,9 @@ Para sair dos logs, pressione `Ctrl+C`. Os containers continuam em execução.
 
 ### Endereços
 
-- Swagger UI: http://localhost:3000/docs
-- Listagem de jogos: http://localhost:3000/games
+* Health Check: http://localhost:3000/api/health
+* Listagem de jogos: http://localhost:3000/games
+* Swagger UI: http://localhost:3000/docs
 
 ### Acesso ao banco local
 
@@ -89,9 +105,9 @@ O comando `docker compose down -v` remove também os volumes e os dados locais.
 
 ### Pré-requisitos
 
-- Node.js 24
-- pnpm 11
-- Projeto Supabase com PostgreSQL acessível
+* Node.js 24
+* pnpm 11
+* Projeto Supabase com PostgreSQL acessível
 
 Se o Docker estiver usando a porta `3000`, pare os containers antes:
 
@@ -124,7 +140,7 @@ No Linux ou macOS:
 cp .env.example .env
 ```
 
-Preencha o `.env` com os dados da conexão PostgreSQL fornecidos pelo Supabase:
+Preencha o `.env` com os dados da conexão PostgreSQL fornecidos pelo Supabase (recomenda-se utilizar o **Session Pooler** via IPv4):
 
 ```dotenv
 PORT=3000
@@ -166,8 +182,9 @@ pnpm dev
 
 Acesse:
 
-- Swagger UI: http://localhost:3000/docs
-- Listagem de jogos: http://localhost:3000/games
+* Health Check: http://localhost:3000/api/health
+* Listagem de jogos: http://localhost:3000/games
+* Swagger UI: http://localhost:3000/docs
 
 Se alterar `PORT`, utilize a porta configurada nos endereços.
 
@@ -182,10 +199,22 @@ pnpm start
 
 A execução direta com Node.js não aplica migrations automaticamente.
 
+## Imagem Docker de produção
+
+O `Dockerfile` utiliza build multi-stage baseado em `node:24-alpine`, compilando o TypeScript para `dist/`, mantendo apenas as dependências de produção e iniciando a aplicação com `node dist/server.js`.
+
+Para testar a imagem de produção localmente a partir da raiz do repositório:
+
+```bash
+docker build -t gamedex-api:prod ./backend
+docker run --rm --env-file ./backend/.env -p 3000:3000 gamedex-api:prod
+```
+
 ## Endpoints
 
 | Método | Rota | Operação | Sucesso |
 | --- | --- | --- | --- |
+| GET | `/api/health` | Verificar integridade da API | `200` |
 | GET | `/games` | Listar jogos | `200` |
 | GET | `/games/:id` | Buscar por ID | `200` |
 | POST | `/games` | Cadastrar jogo | `201` |
@@ -211,11 +240,11 @@ Corpo de `POST /games`:
 
 Todos os seis campos são obrigatórios.
 
-- Textos: de 1 a 255 caracteres após remover espaços nas extremidades.
-- Título: único no catálogo.
-- Ano de lançamento: inteiro entre 1 e 9999.
-- `zerado`: booleano, `true` ou `false`.
-- `id`, `createdAt` e `updatedAt`: gerenciados automaticamente.
+* Textos: de 1 a 255 caracteres após remover espaços nas extremidades.
+* Título: único no catálogo.
+* Ano de lançamento: inteiro entre 1 e 9999.
+* `zerado`: booleano, `true` ou `false`.
+* `id`, `createdAt` e `updatedAt`: gerenciados automaticamente.
 
 ## Exemplo de atualização
 
@@ -241,13 +270,14 @@ Somente os campos enviados são atualizados. Um objeto vazio retorna o registro 
 
 Fluxo de verificação:
 
-1. Cadastrar um jogo.
-2. Listar os jogos.
-3. Buscar pelo ID retornado.
-4. Atualizar o campo `zerado`.
-5. Consultar novamente para confirmar a alteração.
-6. Excluir o registro.
-7. Buscar novamente e confirmar a resposta `404`.
+1. Consultar `GET /api/health` para confirmar o status `200`.
+2. Cadastrar um jogo.
+3. Listar os jogos.
+4. Buscar pelo ID retornado.
+5. Atualizar o campo `zerado`.
+6. Consultar novamente para confirmar a alteração.
+7. Excluir o registro.
+8. Buscar novamente e confirmar a resposta `404`.
 
 A persistência pode ser conferida na tabela `games`, pelo Supabase ou por um cliente conectado ao PostgreSQL local, conforme o ambiente em execução.
 
@@ -261,5 +291,7 @@ A persistência pode ser conferida na tabela `games`, pelo Supabase ou por um cl
 | `src/routes/` | Rotas Express |
 | `src/docs/swagger.json` | Documentação OpenAPI |
 | `src/migrations/` | Criação das tabelas |
-| `src/app.ts` | Middlewares, rotas e Swagger UI |
+| `src/app.ts` | Middlewares, health check, rotas e Swagger UI |
 | `src/server.ts` | Conexão e inicialização do servidor |
+| `Dockerfile` | Build multi-stage para desenvolvimento e produção |
+| `.dockerignore` | Exclusão de arquivos desnecessários do contexto Docker |
