@@ -13,10 +13,12 @@ async function main() {
 
     app.listen(PORT, () => {
       console.log(`🚀 Servidor rodando em: http://localhost:${PORT}`);
+      console.log(`🩺 Health Check disponível em: http://localhost:${PORT}/api/health`);
       console.log(`📄 Swagger disponível em: http://localhost:${PORT}/docs`);
     });
   } catch (error) {
     console.error('❌ Falha ao conectar com o banco de dados:', error);
+    process.exit(1);
   }
 }
 

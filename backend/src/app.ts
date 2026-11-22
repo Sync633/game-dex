@@ -9,6 +9,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get('/api/health', (_req, res) => {
+  void _req;
+  res.status(200).json({
+    status: 'ok',
+    service: 'gamedex-api',
+    uptime: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/games', gameRoutes);
